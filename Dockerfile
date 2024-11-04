@@ -1,5 +1,5 @@
 # Use Maven with OpenJDK 11 as the base image
-FROM maven:3.8.4-openjdk-11
+FROM maven:3.8.4-openjdk-21
 
 # Set the working directory
 WORKDIR /usr/src/app

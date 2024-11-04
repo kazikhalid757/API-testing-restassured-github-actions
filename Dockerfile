@@ -27,5 +27,5 @@ RUN mvn dependency:resolve
 # Copy the rest of the application
 COPY . .
 
-# Start the Selenium Hub and Node in the background
-CMD ['mvn', 'clean' ,'test']
+# Start the Maven tests
+CMD ["mvn", "clean", "test"]

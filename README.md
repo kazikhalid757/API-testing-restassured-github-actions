@@ -1,153 +1,76 @@
-# API Testing with Rest Assured and GitHub Actions
+# API Test CI with CircleCI
 
-This repository contains an API testing framework built with **Java** and **Rest Assured**, integrated with **GitHub Actions** for Continuous Integration. This setup enables automated testing workflows for RESTful APIs, ensuring code quality and stability.
+This project is set up for continuous integration using CircleCI to build and test an API project written in Java with Rest-Assured. The configuration runs tests on every commit pushed to the main branch.
 
-## Table of Contents
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Setup and Installation](#setup-and-installation)
-- [Running Tests](#running-tests)
-- [Continuous Integration with GitHub Actions](#continuous-integration-with-github-actions)
-- [Reporting](#reporting)
-- [Contributing](#contributing)
-- [License](#license)
+## Prerequisites
 
----
-
-## Getting Started
-
-To get started with API testing using Rest Assured, clone this repository and follow the setup instructions below.
+- Java 21
+- Maven
+- CircleCI account
+- Access to the repository (if private)
 
 ## Project Structure
 
 ```
-├── src
-│   ├── main
-│   │   └── java
-│   └── test
-│       └── java
-│           ├── tests        # Contains test classes
-│           ├── utils        # Utility classes (e.g., for configuration)
-│           └── config       # Configuration management
-├── .github
-│   └── workflows
-│       └── ci.yml           # GitHub Actions workflow for running tests
-├── pom.xml                  # Maven project file with dependencies
-└── README.md
+.
+├── src/                 # Source code
+├── pom.xml              # Maven build configuration
+└── .circleci/
+    └── config.yml       # CircleCI configuration file
 ```
 
-## Prerequisites
+## CI/CD Pipeline Overview
 
-- **Java** 11 or higher
-- **Maven** 3.6 or higher
-- **Git** for version control
+The CircleCI pipeline performs the following steps:
+1. **Checkout Code**: Pulls the latest code from the repository.
+2. **Set up Java Environment**: Uses JDK 21 to build and run tests.
+3. **Install Dependencies**: Installs Maven dependencies.
+4. **Run Tests**: Executes the test suite using `mvn test`.
 
-## Setup and Installation
+## Setup and Configuration
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/api-testing-restassured-github-actions.git
-   cd api-testing-restassured-github-actions
-   ```
+### CircleCI Configuration
 
-2. **Install dependencies**:
-   Run the following Maven command to download dependencies:
-   ```bash
-   mvn clean install
-   ```
-
-## Running Tests
-
-You can run all tests locally using Maven:
-
-```bash
-mvn test
-```
-
-### Running a Specific Test
-
-To run a single test, use the following command and specify the test class name:
-
-```bash
-mvn -Dtest=TestClassName test
-```
-
-## Continuous Integration with GitHub Actions
-
-This project uses **GitHub Actions** to automatically run tests on every commit or pull request to the repository. The workflow file `.github/workflows/ci.yml` defines the CI pipeline.
-
-### GitHub Actions Workflow (ci.yml)
+The CircleCI configuration file (`.circleci/config.yml`) defines a workflow to build and test the project. Below is an example of the configuration:
 
 ```yaml
-name: API Test CI
+version: 2.1
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+executors:
+  maven-executor:
+    docker:
+      - image: cimg/openjdk:21.0  # JDK 21 environment
+    working_directory: ~/repo
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
+  build:
+    executor: maven-executor
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - checkout
+      - run:
+          name: Install dependencies
+          command: mvn install
+      - run:
+          name: Run tests
+          command: mvn test
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-
-      - name: Install dependencies
-        run: mvn install
-
-      - name: Run tests
-        run: mvn test
+workflows:
+  version: 2
+  test-and-build:
+    jobs:
+      - build
 ```
 
-### Customizing the Workflow
+### Steps to Enable CircleCI
 
-You can edit `.github/workflows/ci.yml` to customize the workflow based on your testing and deployment requirements.
+1. **Fork/Clone this Repository**: Get a copy of this repository.
+2. **Push to GitHub or Bitbucket**: CircleCI supports integration with GitHub and Bitbucket.
+3. **Set Up CircleCI Project**: Go to [CircleCI](https://circleci.com/) and add your repository as a project.
+4. **Automatic Builds**: CircleCI will trigger builds on every push to the `main` branch.
 
-## Reporting
+## Running Tests Locally
 
-This project supports generating test reports with **Allure**.
+To run the tests locally before pushing to the repository:
+1. **Install Dependencies**: Run `mvn install` to download required packages.
+2. **Execute Tests**: Run `mvn test` to execute the test suite.
 
-1. **Add Allure dependency** to `pom.xml`:
-
-   ```xml
-   <dependency>
-       <groupId>io.qameta.allure</groupId>
-       <artifactId>allure-rest-assured</artifactId>
-       <version>2.13.0</version>
-   </dependency>
-   ```
-
-2. **Generate Allure Reports** after running tests:
-
-   ```bash
-   mvn allure:serve
-   ```
-
-3. **View Reports**: This will open a local server to display the test results.
-
-## Contributing
-
-We welcome contributions to improve this project! Please follow these steps:
-
-1. Fork this repository.
-2. Create a new branch (`feature-branch`).
-3. Commit your changes.
-4. Push to the branch.
-5. Open a Pull Request.
-
-## License
-
-This project is licensed under the MIT License.
-
----
-
-With this setup, you have a complete API testing framework that supports local and CI testing with reporting. Happy testing! 🚀

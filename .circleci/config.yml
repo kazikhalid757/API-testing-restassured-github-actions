@@ -1,0 +1,27 @@
+version: 2.1
+
+executors:
+  maven-executor:
+    docker:
+      - image: cimg/openjdk:21.0  # Updated to use cimg image with JDK 21
+    working_directory: ~/repo
+
+jobs:
+  build:
+    executor: maven-executor
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: mvn install
+
+      - run:
+          name: Run tests
+          command: mvn test
+
+workflows:
+  version: 2
+  test-and-build:
+    jobs:
+      - build
